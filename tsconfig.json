@@ -33,5 +33,5 @@
     "allowJs": true,
     "checkJs": true,
   },
-  "include": ["src/**/*", "eslint.config.mts", "manifest.json"]
+  "include": ["src/**/*", "eslint.config.mts", "esbuild.config.mts", "manifest.json"]
 }
