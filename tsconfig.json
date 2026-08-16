@@ -1,19 +1,37 @@
 {
-	"compilerOptions": {
-		"inlineSourceMap": true,
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "rootDir": ".",
+    "outDir": "dist",
+    "lib": [
+      "ES2021",
+      "DOM"
+    ],
+    "declaration": true,
+    "inlineSourceMap": true,
 		"inlineSources": true,
-		"module": "ESNext",
-		"target": "ES2021",
-		"strict": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    // https://esbuild.github.io/content-types/#typescript-caveats
+    "isolatedModules": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
-		"moduleResolution": "node",
-		"isolatedModules": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"allowSyntheticDefaultImports": true,
-		"lib": ["ES2021", "DOM"]
-	},
-	"include": ["src/**/*.ts"]
+
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "checkJs": true,
+  },
+  "include": ["src/**/*", "eslint.config.mts", "manifest.json"]
 }

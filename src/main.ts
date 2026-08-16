@@ -1,14 +1,14 @@
 import {
 	Editor,
 	MarkdownView,
-	MarkdownFileInfo,
+	type MarkdownFileInfo,
 	Modal,
 	Notice,
 	Plugin,
 } from 'obsidian';
 import {
+	type MyPluginSettings,
 	DEFAULT_SETTINGS,
-	MyPluginSettings,
 	SampleSettingTab,
 } from './settings';
 

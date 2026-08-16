@@ -14,19 +14,17 @@ export default defineConfig(
 		'package-lock.json',
 		'tsconfig.json',
 	]),
+	...obsidianmd.configs.recommended,
 	{
+		files: ['**/*.{js,ts,mts}'],
 		languageOptions: {
 			globals: {
 				...globals.browser,
 			},
 			parserOptions: {
-				projectService: {
-					allowDefaultProject: ['eslint.config.mts', 'manifest.json'],
-				},
-				tsconfigRootDir: import.meta.dirname,
+				projectService: true,
 				extraFileExtensions: ['.json'],
 			},
 		},
 	},
-	...obsidianmd.configs.recommended,
 );
