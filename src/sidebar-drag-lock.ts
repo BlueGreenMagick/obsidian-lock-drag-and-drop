@@ -22,7 +22,7 @@ export type ToggleCurrentViewResult =
   | { displayText: string; supported: false };
 
 interface SidebarView extends SidebarViewType {
-  navHeader: HTMLElement;
+  navHeader: HTMLElement | null;
   viewEl: HTMLElement;
 }
 
@@ -107,8 +107,6 @@ export class SidebarDragLockManager {
     if (!this.isSidebarLeaf(leaf)) return null;
 
     const navHeader = leaf.view.containerEl.querySelector<HTMLElement>(NAV_HEADER_SELECTOR);
-    if (navHeader === null) return null;
-
     const viewType = leaf.view.getViewType();
     return {
       displayText: leaf.view.getDisplayText().trim() || viewType,
@@ -138,62 +136,29 @@ export class SidebarDragLockManager {
 }
 
 class SidebarDragLockController {
-  readonly navHeader: HTMLElement;
-
-  private readonly buttonEl: HTMLElement;
+  private readonly button: SidebarDragLockButton | null;
   private unlocked = false;
 
   constructor(
     private readonly viewEl: HTMLElement,
-    navHeader: HTMLElement,
+    navHeader: HTMLElement | null,
   ) {
-    this.navHeader = navHeader;
-    this.buttonEl = this.createButton(navHeader);
+    this.button =
+      navHeader === null ? null : new SidebarDragLockButton(navHeader, () => this.toggle());
 
-    this.buttonEl.addEventListener("click", this.handleClick);
-    this.buttonEl.addEventListener("keydown", this.handleKeyDown);
     this.viewEl.addEventListener("dragstart", this.handleDragStart, true);
-    this.updateButton();
+    this.button?.setUnlocked(this.unlocked);
   }
 
   destroy(): void {
-    this.buttonEl.removeEventListener("click", this.handleClick);
-    this.buttonEl.removeEventListener("keydown", this.handleKeyDown);
     this.viewEl.removeEventListener("dragstart", this.handleDragStart, true);
-    this.buttonEl.remove();
+    this.button?.destroy();
   }
 
-  isAttachedTo(navHeader: HTMLElement): boolean {
-    return this.navHeader === navHeader && navHeader.contains(this.buttonEl);
+  isAttachedTo(navHeader: HTMLElement | null): boolean {
+    if (navHeader === null) return this.button === null;
+    return this.button?.isAttachedTo(navHeader) ?? false;
   }
-
-  private createButton(navHeader: HTMLElement): HTMLElement {
-    const button = navHeader.createDiv({
-      cls: ["clickable-icon", "nav-action-button", TOGGLE_CLASS],
-      attr: {
-        "aria-label": "Unlock drag and drop",
-        role: "button",
-        tabindex: "0",
-      },
-    });
-    setIcon(button, "lock-open");
-
-    const buttonContainer = navHeader.querySelector<HTMLElement>(NAV_BUTTONS_SELECTOR) ?? navHeader;
-    buttonContainer.append(button);
-
-    return button;
-  }
-
-  private readonly handleClick = (): void => {
-    this.toggle();
-  };
-
-  private readonly handleKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-
-    event.preventDefault();
-    this.toggle();
-  };
 
   private readonly handleDragStart = (event: DragEvent): void => {
     if (this.unlocked) return;
@@ -207,12 +172,7 @@ class SidebarDragLockController {
 
   toggle(): void {
     this.unlocked = !this.unlocked;
-    this.updateButton();
-  }
-
-  private updateButton(): void {
-    this.buttonEl.toggleClass("is-active", this.unlocked);
-    this.buttonEl.setAttribute("aria-pressed", String(this.unlocked));
+    this.button?.setUnlocked(this.unlocked);
   }
 
   private dispatchContextMenu(event: DragEvent): void {
@@ -241,4 +201,61 @@ class SidebarDragLockController {
       }),
     );
   }
+}
+
+class SidebarDragLockButton {
+  private readonly buttonEl: HTMLElement;
+
+  constructor(
+    private readonly navHeader: HTMLElement,
+    private readonly onToggle: () => void,
+  ) {
+    this.buttonEl = this.createButton();
+    this.buttonEl.addEventListener("click", this.handleClick);
+    this.buttonEl.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  destroy(): void {
+    this.buttonEl.removeEventListener("click", this.handleClick);
+    this.buttonEl.removeEventListener("keydown", this.handleKeyDown);
+    this.buttonEl.remove();
+  }
+
+  isAttachedTo(navHeader: HTMLElement): boolean {
+    return this.navHeader === navHeader && navHeader.contains(this.buttonEl);
+  }
+
+  setUnlocked(unlocked: boolean): void {
+    this.buttonEl.toggleClass("is-active", unlocked);
+    this.buttonEl.setAttribute("aria-pressed", String(unlocked));
+  }
+
+  private createButton(): HTMLElement {
+    const button = this.navHeader.createDiv({
+      cls: ["clickable-icon", "nav-action-button", TOGGLE_CLASS],
+      attr: {
+        "aria-label": "Unlock drag and drop",
+        role: "button",
+        tabindex: "0",
+      },
+    });
+    setIcon(button, "lock-open");
+
+    const buttonContainer =
+      this.navHeader.querySelector<HTMLElement>(NAV_BUTTONS_SELECTOR) ?? this.navHeader;
+    buttonContainer.append(button);
+
+    return button;
+  }
+
+  private readonly handleClick = (): void => {
+    this.onToggle();
+  };
+
+  private readonly handleKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    this.onToggle();
+  };
 }
