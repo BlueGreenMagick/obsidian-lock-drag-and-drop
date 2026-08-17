@@ -22,9 +22,7 @@ interface CopyStaticAssetsPluginOptions {
 	assets: Asset[];
 }
 
-function copyStaticAssetsPlugin(
-	opts: CopyStaticAssetsPluginOptions,
-): esbuild.Plugin {
+function copyStaticAssetsPlugin(opts: CopyStaticAssetsPluginOptions): esbuild.Plugin {
 	return {
 		name: 'copy-static-files',
 		setup(build) {
@@ -42,9 +40,7 @@ function copyStaticAssetsPlugin(
 				const dest = path.resolve(outDir, to);
 				return { from: src, to: dest };
 			});
-			const destDirs = new Set(
-				absolutePathAssets.map(({ to }) => path.resolve(to, '..')),
-			);
+			const destDirs = new Set(absolutePathAssets.map(({ to }) => path.resolve(to, '..')));
 
 			build.onEnd(async (result) => {
 				if (result.errors.length > 0) return;
@@ -56,11 +52,7 @@ function copyStaticAssetsPlugin(
 				);
 				await Promise.all(
 					absolutePathAssets.map(({ from, to }) => {
-						return fs.promises.copyFile(
-							from,
-							to,
-							constants.COPYFILE_FICLONE,
-						);
+						return fs.promises.copyFile(from, to, constants.COPYFILE_FICLONE);
 					}),
 				);
 			});
