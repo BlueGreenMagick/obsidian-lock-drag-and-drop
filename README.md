@@ -8,7 +8,6 @@ An enabled view starts locked. Select the open-lock button in its navigation hea
 
 On mobile, the plugin preserves long-press menus by dispatching a context-menu event before it cancels a locked drag.
 
-This plugin is not affiliated with official Obsidian product.
 
 ## Development
 
@@ -20,3 +19,9 @@ npm run build
 ```
 
 The build writes `main.js`, `manifest.json`, and `styles.css` to `dist/`.
+
+## Disclaimer
+
+This plugin was developed with AI assistance, and all code have been reviewed by a human.
+
+This plugin is not affiliated with official Obsidian product.
