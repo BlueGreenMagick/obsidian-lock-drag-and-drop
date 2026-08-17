@@ -1,5 +1,6 @@
 import {
   Platform,
+  View,
   setIcon,
   type Workspace,
   type WorkspaceItem,
@@ -15,6 +16,10 @@ export interface SidebarViewType {
   displayText: string;
   viewType: string;
 }
+
+export type ToggleCurrentViewResult =
+  | { supported: true }
+  | { displayText: string; supported: false };
 
 interface SidebarView extends SidebarViewType {
   navHeader: HTMLElement;
@@ -46,6 +51,21 @@ export class SidebarDragLockManager {
     return Array.from(viewTypes.values()).sort((left, right) => {
       return left.displayText.localeCompare(right.displayText);
     });
+  }
+
+  toggleCurrentView(): ToggleCurrentViewResult {
+    const view = this.workspace.getActiveViewOfType(View);
+    const controller = view === null ? undefined : this.controllers.get(view.containerEl);
+
+    if (controller === undefined) {
+      return {
+        displayText: view?.getDisplayText().trim() || view?.getViewType() || "Current view",
+        supported: false,
+      };
+    }
+
+    controller.toggle();
+    return { supported: true };
   }
 
   refresh(): void {
@@ -185,7 +205,7 @@ class SidebarDragLockController {
     event.stopPropagation();
   };
 
-  private toggle(): void {
+  toggle(): void {
     this.unlocked = !this.unlocked;
     this.updateButton();
   }
