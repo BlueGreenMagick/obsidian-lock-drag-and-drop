@@ -18,7 +18,7 @@ export interface SidebarViewType {
 }
 
 export type ToggleCurrentViewResult =
-  | { supported: true }
+  | { displayText: string; locked: boolean; supported: true }
   | { displayText: string; supported: false };
 
 interface SidebarView extends SidebarViewType {
@@ -28,6 +28,7 @@ interface SidebarView extends SidebarViewType {
 
 export class SidebarDragLockManager {
   private readonly controllers = new Map<HTMLElement, SidebarDragLockController>();
+  private readonly stateChangeListeners = new Set<() => void>();
   private destroyed = false;
 
   constructor(
@@ -53,19 +54,46 @@ export class SidebarDragLockManager {
     });
   }
 
-  toggleCurrentView(): ToggleCurrentViewResult {
+  getCurrentViewState(): ToggleCurrentViewResult {
     const view = this.workspace.getActiveViewOfType(View);
     const controller = view === null ? undefined : this.controllers.get(view.containerEl);
+    const displayText = view?.getDisplayText().trim() || view?.getViewType() || "Current view";
 
     if (controller === undefined) {
       return {
-        displayText: view?.getDisplayText().trim() || view?.getViewType() || "Current view",
+        displayText,
         supported: false,
       };
     }
 
+    return {
+      displayText,
+      locked: controller.isLocked(),
+      supported: true,
+    };
+  }
+
+  toggleCurrentView(): ToggleCurrentViewResult {
+    const state = this.getCurrentViewState();
+    if (!state.supported) return state;
+
+    const view = this.workspace.getActiveViewOfType(View);
+    const controller = view === null ? undefined : this.controllers.get(view.containerEl);
+    if (controller === undefined) return { displayText: state.displayText, supported: false };
+
     controller.toggle();
-    return { supported: true };
+    return {
+      displayText: state.displayText,
+      locked: controller.isLocked(),
+      supported: true,
+    };
+  }
+
+  onStateChange(callback: () => void): () => void {
+    this.stateChangeListeners.add(callback);
+    return () => {
+      this.stateChangeListeners.delete(callback);
+    };
   }
 
   refresh(): void {
@@ -90,9 +118,14 @@ export class SidebarDragLockManager {
 
     for (const [viewEl, { navHeader }] of sidebarViews) {
       if (!this.controllers.has(viewEl)) {
-        this.controllers.set(viewEl, new SidebarDragLockController(viewEl, navHeader));
+        this.controllers.set(
+          viewEl,
+          new SidebarDragLockController(viewEl, navHeader, () => this.notifyStateChange()),
+        );
       }
     }
+
+    this.notifyStateChange();
   }
 
   destroy(): void {
@@ -101,6 +134,7 @@ export class SidebarDragLockManager {
       controller.destroy();
     }
     this.controllers.clear();
+    this.stateChangeListeners.clear();
   }
 
   private getSidebarView(leaf: WorkspaceLeaf): SidebarView | null {
@@ -133,6 +167,12 @@ export class SidebarDragLockManager {
       item = item.parent;
     }
   }
+
+  private notifyStateChange(): void {
+    for (const callback of this.stateChangeListeners) {
+      callback();
+    }
+  }
 }
 
 class SidebarDragLockController {
@@ -142,6 +182,7 @@ class SidebarDragLockController {
   constructor(
     private readonly viewEl: HTMLElement,
     navHeader: HTMLElement | null,
+    private readonly onStateChange: () => void,
   ) {
     this.button =
       navHeader === null ? null : new SidebarDragLockButton(navHeader, () => this.toggle());
@@ -160,6 +201,10 @@ class SidebarDragLockController {
     return this.button?.isAttachedTo(navHeader) ?? false;
   }
 
+  isLocked(): boolean {
+    return !this.unlocked;
+  }
+
   private readonly handleDragStart = (event: DragEvent): void => {
     if (this.unlocked) return;
 
@@ -173,6 +218,7 @@ class SidebarDragLockController {
   toggle(): void {
     this.unlocked = !this.unlocked;
     this.button?.setUnlocked(this.unlocked);
+    this.onStateChange();
   }
 
   private dispatchContextMenu(event: DragEvent): void {
