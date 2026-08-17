@@ -1,34 +1,34 @@
 {
-	"compilerOptions": {
-		"target": "ES2021",
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"rootDir": ".",
-		"outDir": "dist",
-		"lib": ["ES2021", "DOM"],
-		"declaration": true,
-		"inlineSourceMap": true,
-		"inlineSources": true,
-		"esModuleInterop": true,
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "rootDir": ".",
+    "outDir": "dist",
+    "lib": ["ES2021", "DOM"],
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "esModuleInterop": true,
 
-		"strict": true,
-		"verbatimModuleSyntax": true,
-		// https://esbuild.github.io/content-types/#typescript-caveats
-		"isolatedModules": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noImplicitAny": true,
-		"exactOptionalPropertyTypes": true,
-		"forceConsistentCasingInFileNames": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUncheckedIndexedAccess": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    // https://esbuild.github.io/content-types/#typescript-caveats
+    "isolatedModules": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
 
-		"resolveJsonModule": true,
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"allowJs": true,
-		"checkJs": true
-	},
-	"include": ["src/**/*", "eslint.config.mts", "esbuild.config.mts", "manifest.json"]
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["src/**/*", "eslint.config.mts", "esbuild.config.mts", "manifest.json"]
 }
