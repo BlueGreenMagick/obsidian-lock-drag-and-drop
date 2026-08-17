@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-sample-plugin",
+  "name": "obsidian-lock-drag-and-drop",
   "version": "1.0.0",
-  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+  "description": "Prevent accidental drag and drop in Obsidian sidebar views.",
   "keywords": [],
   "license": "0-BSD",
   "type": "module",
