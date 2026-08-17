@@ -2,6 +2,7 @@ import { Notice, Plugin } from "obsidian";
 import { SidebarDragLockManager } from "./sidebar-drag-lock";
 import { LockDragAndDropSettingTab, type LockDragAndDropSettings, parseSettings } from "./settings";
 import { StatusBarDragLockButton } from "./status-bar-drag-lock-button";
+import { getViewDisplayText } from "./utils";
 
 export default class LockDragAndDropPlugin extends Plugin {
   settings!: LockDragAndDropSettings;
@@ -14,10 +15,13 @@ export default class LockDragAndDropPlugin extends Plugin {
     this.addSettingTab(new LockDragAndDropSettingTab(this.app, this));
 
     const toggleLock = (): void => {
-      const result = this.dragLockManager.toggleCurrentView();
-      if (!result.supported) {
-        new Notice(`"${result.displayText}" is not supported`);
+      const state = this.dragLockManager.getCurrentViewState();
+      if (!state.supported) {
+        new Notice(`"${getViewDisplayText(state.view)}" is not supported`);
+        return;
       }
+
+      state.lock.toggle();
     };
 
     this.addCommand({

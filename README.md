@@ -8,7 +8,6 @@ An enabled view starts locked. Select the open-lock button in its navigation hea
 
 On mobile, the plugin preserves long-press menus by dispatching a context-menu event before it cancels a locked drag.
 
-
 ## Development
 
 Install dependencies and build the plugin:

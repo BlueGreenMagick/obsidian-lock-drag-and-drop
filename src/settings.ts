@@ -1,5 +1,6 @@
 import { PluginSettingTab, Setting, SettingGroup, type App } from "obsidian";
 import type LockDragAndDropPlugin from "./main";
+import { getViewDisplayText } from "./utils";
 
 export interface LockDragAndDropSettings {
   views: Record<string, ViewSettings>;
@@ -51,8 +52,10 @@ export class LockDragAndDropSettingTab extends PluginSettingTab {
     const viewsGroup = new SettingGroup(containerEl);
     viewsGroup.setHeading("Enabled views");
 
-    const viewTypes = this.plugin.dragLockManager.getViewTypes();
-    if (viewTypes.length === 0) {
+    const views = this.plugin.dragLockManager.getViews().sort((left, right) => {
+      return getViewDisplayText(left).localeCompare(getViewDisplayText(right));
+    });
+    if (views.length === 0) {
       containerEl.createEl("p", {
         text: "No lockable sidebar views are currently open.",
         cls: "setting-item-description",
@@ -60,9 +63,10 @@ export class LockDragAndDropSettingTab extends PluginSettingTab {
       return;
     }
 
-    for (const { displayText, viewType } of viewTypes) {
+    for (const view of views) {
+      const viewType = view.getViewType();
       viewsGroup.addSetting((setting) => {
-        setting.setName(`${viewType} (${displayText})`);
+        setting.setName(`${viewType} (${getViewDisplayText(view)})`);
         setting.addToggle((toggle) => {
           const { settings } = this.plugin;
           toggle.setValue(settings.views[viewType]?.enabled ?? false);

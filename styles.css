@@ -1,5 +1,5 @@
 .status-bar-item.lock-drag-and-drop-status-bar-button {
-  padding: 0 var(--size-2-2)
+  padding: 0 var(--size-2-2);
 }
 
 .lock-drag-and-drop-status-bar-button.is-unavailable {

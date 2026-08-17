@@ -12,18 +12,18 @@ const NAV_HEADER_SELECTOR = ".nav-header";
 const NAV_BUTTONS_SELECTOR = ".nav-buttons-container";
 const TOGGLE_CLASS = "lock-drag-and-drop-toggle";
 
-export interface SidebarViewType {
-  displayText: string;
-  viewType: string;
+export interface DragLock {
+  isLocked(): boolean;
+  toggle(): void;
 }
 
-export type ToggleCurrentViewResult =
-  | { displayText: string; locked: boolean; supported: true }
-  | { displayText: string; supported: false };
+export type CurrentViewState =
+  | { supported: true; view: View; lock: DragLock }
+  | { supported: false; view: View | null };
 
-interface SidebarView extends SidebarViewType {
+interface SidebarView {
   navHeader: HTMLElement | null;
-  viewEl: HTMLElement;
+  view: View;
 }
 
 export class SidebarDragLockManager {
@@ -36,57 +36,29 @@ export class SidebarDragLockManager {
     private readonly settings: LockDragAndDropSettings,
   ) {}
 
-  getViewTypes(): SidebarViewType[] {
-    const viewTypes = new Map<string, SidebarViewType>();
+  getViews(): View[] {
+    const views = new Map<string, View>();
 
     this.workspace.iterateAllLeaves((leaf) => {
       const sidebarView = this.getSidebarView(leaf);
-      if (sidebarView === null || viewTypes.has(sidebarView.viewType)) return;
+      if (sidebarView === null) return;
 
-      viewTypes.set(sidebarView.viewType, {
-        displayText: sidebarView.displayText,
-        viewType: sidebarView.viewType,
-      });
+      const { view } = sidebarView;
+      const viewType = view.getViewType();
+      if (!views.has(viewType)) views.set(viewType, view);
     });
 
-    return Array.from(viewTypes.values()).sort((left, right) => {
-      return left.displayText.localeCompare(right.displayText);
-    });
+    return Array.from(views.values());
   }
 
-  getCurrentViewState(): ToggleCurrentViewResult {
+  getCurrentViewState(): CurrentViewState {
     const view = this.workspace.getActiveViewOfType(View);
-    const controller = view === null ? undefined : this.controllers.get(view.containerEl);
-    const displayText = view?.getDisplayText().trim() || view?.getViewType() || "Current view";
-
-    if (controller === undefined) {
-      return {
-        displayText,
-        supported: false,
-      };
+    if (view !== null) {
+      const lock = this.controllers.get(view.containerEl);
+      if (lock !== undefined) return { supported: true, view, lock };
     }
 
-    return {
-      displayText,
-      locked: controller.isLocked(),
-      supported: true,
-    };
-  }
-
-  toggleCurrentView(): ToggleCurrentViewResult {
-    const state = this.getCurrentViewState();
-    if (!state.supported) return state;
-
-    const view = this.workspace.getActiveViewOfType(View);
-    const controller = view === null ? undefined : this.controllers.get(view.containerEl);
-    if (controller === undefined) return { displayText: state.displayText, supported: false };
-
-    controller.toggle();
-    return {
-      displayText: state.displayText,
-      locked: controller.isLocked(),
-      supported: true,
-    };
+    return { supported: false, view };
   }
 
   onStateChange(callback: () => void): () => void {
@@ -103,9 +75,9 @@ export class SidebarDragLockManager {
 
     this.workspace.iterateAllLeaves((leaf) => {
       const sidebarView = this.getSidebarView(leaf);
-      if (sidebarView === null || !this.isViewTypeEnabled(sidebarView.viewType)) return;
+      if (sidebarView === null || !this.isViewTypeEnabled(sidebarView.view.getViewType())) return;
 
-      sidebarViews.set(sidebarView.viewEl, sidebarView);
+      sidebarViews.set(sidebarView.view.containerEl, sidebarView);
     });
 
     for (const [viewEl, controller] of this.controllers) {
@@ -141,12 +113,9 @@ export class SidebarDragLockManager {
     if (!this.isSidebarLeaf(leaf)) return null;
 
     const navHeader = leaf.view.containerEl.querySelector<HTMLElement>(NAV_HEADER_SELECTOR);
-    const viewType = leaf.view.getViewType();
     return {
-      displayText: leaf.view.getDisplayText().trim() || viewType,
       navHeader,
-      viewEl: leaf.view.containerEl,
-      viewType,
+      view: leaf.view,
     };
   }
 
@@ -175,7 +144,7 @@ export class SidebarDragLockManager {
   }
 }
 
-class SidebarDragLockController {
+class SidebarDragLockController implements DragLock {
   private readonly button: SidebarDragLockButton | null;
   private unlocked = false;
 

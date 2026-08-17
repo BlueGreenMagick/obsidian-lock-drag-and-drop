@@ -32,12 +32,14 @@ export class StatusBarDragLockButton {
 
   private readonly update = (): void => {
     const state = this.dragLockManager.getCurrentViewState();
+    const locked = state.supported && state.lock.isLocked();
+
     this.buttonEl.toggleClass("is-unavailable", !state.supported);
-    this.buttonEl.toggleClass("is-active", state.supported && !state.locked);
+    this.buttonEl.toggleClass("is-active", state.supported && !locked);
     this.buttonEl.setAttribute("aria-disabled", String(!state.supported));
     this.buttonEl.setAttribute(
       "aria-label",
-      state.supported && state.locked ? "Unlock drag and drop" : "Lock drag and drop",
+      locked ? "Unlock drag and drop" : "Lock drag and drop",
     );
 
     if (!state.supported) {
@@ -45,6 +47,6 @@ export class StatusBarDragLockButton {
       return;
     }
 
-    this.buttonEl.setAttribute("aria-pressed", String(!state.locked));
+    this.buttonEl.setAttribute("aria-pressed", String(!locked));
   };
 }
