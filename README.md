@@ -2,7 +2,9 @@
 
 Lock Drag and Drop prevents accidental drag-and-drop actions in Obsidian sidebar views.
 
-Every sidebar view with a navigation header starts locked. Select the open-lock button in a view's navigation header to enable dragging for that view. Select it again to restore the lock.
+By default, drag-and-drop locking is enabled in File explorer and Outline. Use **Settings → Lock Drag and Drop → Enabled views** to configure other currently open sidebar views.
+
+An enabled view starts locked. Select the open-lock button in its navigation header to enable dragging for that view. Select it again to restore the lock.
 
 On mobile, the plugin preserves long-press menus by dispatching a context-menu event before it cancels a locked drag.
 

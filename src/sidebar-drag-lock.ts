@@ -5,38 +5,70 @@ import {
   type WorkspaceItem,
   type WorkspaceLeaf,
 } from "obsidian";
+import type { LockDragAndDropSettings } from "./settings";
 
 const NAV_HEADER_SELECTOR = ".nav-header";
 const NAV_BUTTONS_SELECTOR = ".nav-buttons-container";
 const TOGGLE_CLASS = "lock-drag-and-drop-toggle";
 
+export interface SidebarViewType {
+  displayText: string;
+  viewType: string;
+}
+
+interface SidebarView extends SidebarViewType {
+  navHeader: HTMLElement;
+  viewEl: HTMLElement;
+}
+
 export class SidebarDragLockManager {
   private readonly controllers = new Map<HTMLElement, SidebarDragLockController>();
   private destroyed = false;
 
-  constructor(private readonly workspace: Workspace) {}
+  constructor(
+    private readonly workspace: Workspace,
+    private readonly settings: LockDragAndDropSettings,
+  ) {}
+
+  getViewTypes(): SidebarViewType[] {
+    const viewTypes = new Map<string, SidebarViewType>();
+
+    this.workspace.iterateAllLeaves((leaf) => {
+      const sidebarView = this.getSidebarView(leaf);
+      if (sidebarView === null || viewTypes.has(sidebarView.viewType)) return;
+
+      viewTypes.set(sidebarView.viewType, {
+        displayText: sidebarView.displayText,
+        viewType: sidebarView.viewType,
+      });
+    });
+
+    return Array.from(viewTypes.values()).sort((left, right) => {
+      return left.displayText.localeCompare(right.displayText);
+    });
+  }
 
   refresh(): void {
     if (this.destroyed) return;
 
-    const sidebarViews = new Map<HTMLElement, HTMLElement>();
+    const sidebarViews = new Map<HTMLElement, SidebarView>();
 
     this.workspace.iterateAllLeaves((leaf) => {
-      const navHeader = this.getNavHeader(leaf);
-      if (navHeader !== null) {
-        sidebarViews.set(leaf.view.containerEl, navHeader);
-      }
+      const sidebarView = this.getSidebarView(leaf);
+      if (sidebarView === null || !this.isViewTypeEnabled(sidebarView.viewType)) return;
+
+      sidebarViews.set(sidebarView.viewEl, sidebarView);
     });
 
     for (const [viewEl, controller] of this.controllers) {
-      const navHeader = sidebarViews.get(viewEl);
-      if (navHeader === undefined || !controller.isAttachedTo(navHeader)) {
+      const sidebarView = sidebarViews.get(viewEl);
+      if (sidebarView === undefined || !controller.isAttachedTo(sidebarView.navHeader)) {
         controller.destroy();
         this.controllers.delete(viewEl);
       }
     }
 
-    for (const [viewEl, navHeader] of sidebarViews) {
+    for (const [viewEl, { navHeader }] of sidebarViews) {
       if (!this.controllers.has(viewEl)) {
         this.controllers.set(viewEl, new SidebarDragLockController(viewEl, navHeader));
       }
@@ -51,10 +83,23 @@ export class SidebarDragLockManager {
     this.controllers.clear();
   }
 
-  private getNavHeader(leaf: WorkspaceLeaf): HTMLElement | null {
+  private getSidebarView(leaf: WorkspaceLeaf): SidebarView | null {
     if (!this.isSidebarLeaf(leaf)) return null;
 
-    return leaf.view.containerEl.querySelector<HTMLElement>(NAV_HEADER_SELECTOR);
+    const navHeader = leaf.view.containerEl.querySelector<HTMLElement>(NAV_HEADER_SELECTOR);
+    if (navHeader === null) return null;
+
+    const viewType = leaf.view.getViewType();
+    return {
+      displayText: leaf.view.getDisplayText().trim() || viewType,
+      navHeader,
+      viewEl: leaf.view.containerEl,
+      viewType,
+    };
+  }
+
+  private isViewTypeEnabled(viewType: string): boolean {
+    return this.settings.views[viewType]?.enabled ?? false;
   }
 
   private isSidebarLeaf(leaf: WorkspaceLeaf): boolean {
