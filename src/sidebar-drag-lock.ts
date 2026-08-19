@@ -82,18 +82,22 @@ export class SidebarDragLockManager {
 
     for (const [viewEl, controller] of this.controllers) {
       const sidebarView = sidebarViews.get(viewEl);
-      if (sidebarView === undefined || !controller.isAttachedTo(sidebarView.navHeader)) {
+      if (sidebarView === undefined) {
         controller.destroy();
         this.controllers.delete(viewEl);
       }
     }
 
     for (const [viewEl, { navHeader }] of sidebarViews) {
-      if (!this.controllers.has(viewEl)) {
+      const visibleNavHeader = this.settings.interface.navHeader ? navHeader : null;
+      const controller = this.controllers.get(viewEl);
+      if (controller === undefined) {
         this.controllers.set(
           viewEl,
-          new SidebarDragLockController(viewEl, navHeader, () => this.notifyStateChange()),
+          new SidebarDragLockController(viewEl, visibleNavHeader, () => this.notifyStateChange()),
         );
+      } else {
+        controller.setNavHeader(visibleNavHeader);
       }
     }
 
@@ -145,7 +149,7 @@ export class SidebarDragLockManager {
 }
 
 class SidebarDragLockController implements DragLock {
-  private readonly button: SidebarDragLockButton | null;
+  private button: SidebarDragLockButton | null;
   private unlocked = false;
 
   constructor(
@@ -168,6 +172,15 @@ class SidebarDragLockController implements DragLock {
   isAttachedTo(navHeader: HTMLElement | null): boolean {
     if (navHeader === null) return this.button === null;
     return this.button?.isAttachedTo(navHeader) ?? false;
+  }
+
+  setNavHeader(navHeader: HTMLElement | null): void {
+    if (this.isAttachedTo(navHeader)) return;
+
+    this.button?.destroy();
+    this.button =
+      navHeader === null ? null : new SidebarDragLockButton(navHeader, () => this.toggle());
+    this.button?.setUnlocked(this.unlocked);
   }
 
   isLocked(): boolean {

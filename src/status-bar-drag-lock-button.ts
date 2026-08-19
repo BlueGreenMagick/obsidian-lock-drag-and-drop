@@ -9,7 +9,6 @@ export class StatusBarDragLockButton {
   constructor(
     private readonly buttonEl: HTMLElement,
     private readonly dragLockManager: SidebarDragLockManager,
-    private readonly onToggle: () => void,
   ) {
     this.buttonEl.addClass("clickable-icon", STATUS_BAR_BUTTON_CLASS);
     setIcon(this.buttonEl, "lock-open");
@@ -26,8 +25,10 @@ export class StatusBarDragLockButton {
   }
 
   private readonly handleClick = (): void => {
-    if (!this.dragLockManager.getCurrentViewState().supported) return;
-    this.onToggle();
+    const state = this.dragLockManager.getCurrentViewState();
+    if (!state.supported) return;
+
+    state.lock.toggle();
   };
 
   private readonly update = (): void => {
