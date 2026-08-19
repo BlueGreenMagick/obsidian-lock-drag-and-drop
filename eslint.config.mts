@@ -16,7 +16,7 @@ export default defineConfig(
   ]),
   ...obsidianmd.configs.recommended,
   {
-    files: ["**/*.{js,ts,mts}"],
+    files: ["**/*.{js,ts}"],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -25,6 +25,18 @@ export default defineConfig(
         projectService: true,
         extraFileExtensions: [".json"],
       },
+    },
+  },
+  {
+    files: ["esbuild.config.mts", "eslint.config.mts"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        projectService: true,
+      },
+    },
+    rules: {
+      "obsidianmd/no-nodejs-modules": "off",
     },
   },
 );
