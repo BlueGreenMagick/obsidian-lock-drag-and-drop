@@ -6,6 +6,7 @@
   "license": "0-BSD",
   "type": "module",
   "main": "main.js",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "jiti esbuild.config.mts",
     "build": "tsc -noEmit -skipLibCheck && jiti esbuild.config.mts production",
