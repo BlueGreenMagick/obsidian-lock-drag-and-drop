@@ -23,7 +23,6 @@ jobs:
 
       - name: Build plugin
         run: |
-          pnpm ci
           pnpm run build
 
       - name: Check for optional styles
