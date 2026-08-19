@@ -39,4 +39,9 @@ export default defineConfig(
       "obsidianmd/no-nodejs-modules": "off",
     },
   },
+  {
+    rules: {
+      "obsidianmd/settings-tab/prefer-setting-definitions": "off",
+    },
+  },
 );
