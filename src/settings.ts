@@ -1,4 +1,4 @@
-import { PluginSettingTab, Setting, SettingGroup, type App } from "obsidian";
+import { PluginSettingTab, SettingGroup, type App } from "obsidian";
 import type LockDragAndDropPlugin from "./main";
 import { getViewDisplayText } from "./utils";
 
