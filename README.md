@@ -11,8 +11,8 @@ On Mobile, long press triggers context-menu without drag and drop.
 Install dependencies and build the plugin:
 
 ```sh
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
 The build writes `main.js`, `manifest.json`, and `styles.css` to `./dist/`.
