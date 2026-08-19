@@ -2,7 +2,7 @@
   "id": "obsidian-lock-drag-and-drop",
   "name": "Lock Drag and Drop",
   "version": "1.0.0",
-  "minAppVersion": "1.6.6",
+  "minAppVersion": "1.11.0",
   "description": "Prevent accidental drag and drop in sidebar views until you unlock them.",
   "isDesktopOnly": false
 }
