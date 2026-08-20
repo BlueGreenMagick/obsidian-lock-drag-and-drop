@@ -204,8 +204,8 @@ class SidebarDragLockController implements DragLock {
   }
 
   private dispatchContextMenu(event: DragEvent): void {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
+    const target = event.targetNode;
+    if (target === null || !target.instanceOf(Element)) return;
 
     const MouseEventConstructor = target.ownerDocument.defaultView?.MouseEvent;
     if (MouseEventConstructor === undefined) return;
