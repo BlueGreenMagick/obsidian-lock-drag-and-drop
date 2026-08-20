@@ -11,7 +11,7 @@ export class StatusBarDragLockButton {
     private readonly dragLockManager: SidebarDragLockManager,
   ) {
     this.buttonEl.addClass("clickable-icon", STATUS_BAR_BUTTON_CLASS);
-    setIcon(this.buttonEl, "lock-open");
+    setIcon(this.buttonEl, "move");
 
     this.buttonEl.addEventListener("click", this.handleClick);
     this.unsubscribeFromStateChanges = this.dragLockManager.onStateChange(this.update);
@@ -40,7 +40,11 @@ export class StatusBarDragLockButton {
     this.buttonEl.setAttribute("aria-disabled", String(!state.supported));
     this.buttonEl.setAttribute(
       "aria-label",
-      locked ? "Unlock drag and drop" : "Lock drag and drop",
+      !state.supported
+        ? "Drag & drop cannot be locked in this view"
+        : locked
+          ? "Enable drag & drop"
+          : "Disable drag & drop",
     );
 
     if (!state.supported) {

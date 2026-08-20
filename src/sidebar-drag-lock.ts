@@ -262,12 +262,12 @@ class SidebarDragLockButton {
     const button = this.navHeader.createDiv({
       cls: ["clickable-icon", "nav-action-button", TOGGLE_CLASS],
       attr: {
-        "aria-label": "Unlock drag and drop",
+        "aria-label": "Enable drag & drop",
         role: "button",
         tabindex: "0",
       },
     });
-    setIcon(button, "lock-open");
+    setIcon(button, "move");
 
     const buttonContainer =
       this.navHeader.querySelector<HTMLElement>(NAV_BUTTONS_SELECTOR) ?? this.navHeader;

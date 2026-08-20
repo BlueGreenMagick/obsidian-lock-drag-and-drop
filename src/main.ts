@@ -17,8 +17,8 @@ export default class LockDragAndDropPlugin extends Plugin {
 
     this.addCommand({
       id: "toggle-lock",
-      name: "Toggle lock",
-      icon: "lock",
+      name: "Toggle",
+      icon: "move",
       checkCallback: (checking) => {
         if (!this.settings.interface.action) return false;
         if (!checking) this.toggleLock();
