@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Prevent accidental drag and drop in Obsidian sidebar views.",
   "keywords": [],
-  "license": "0-BSD",
+  "license": "MIT",
   "type": "module",
   "main": "main.js",
   "scripts": {
