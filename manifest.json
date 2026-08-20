@@ -2,7 +2,7 @@
   "id": "lock-drag-and-drop",
   "name": "Lock Drag and Drop",
   "author": "Yoonchae Lee",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minAppVersion": "1.11.0",
   "description": "Prevent accidental drag & drop in sidebars",
   "isDesktopOnly": false

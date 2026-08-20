@@ -1,6 +1,6 @@
 {
   "name": "obsidian-lock-drag-and-drop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Prevent accidental drag and drop in Obsidian sidebar views.",
   "keywords": [],
   "license": "MIT",
