@@ -4,6 +4,6 @@
   "author": "Yoonchae Lee",
   "version": "1.0.2",
   "minAppVersion": "1.11.0",
-  "description": "Prevent accidental drag and drop in sidebar views until you unlock them.",
+  "description": "Prevent accidental drag & drop in sidebars",
   "isDesktopOnly": false
 }
