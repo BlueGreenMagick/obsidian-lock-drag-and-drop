@@ -1,6 +1,6 @@
-# Lock Drag & Drop - Obsidian Plugin
+# Lock Drag and Drop - Obsidian Plugin
 
-<b>Lock Drag & Drop</b> prevents accidental drag & drop in Obsidian sidebars.
+<b>Lock Drag and Drop</b> prevents accidental drag & drop in Obsidian sidebars.
 
 You can click on the move button at the top to enable drag & drop only when needed.
 
