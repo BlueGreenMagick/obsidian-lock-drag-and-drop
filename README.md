@@ -22,7 +22,7 @@ The build writes `main.js`, `manifest.json`, and `styles.css` to `./dist/`.
 Then symlink the `./dist/` folder from the Obsidian plugin folder.
 
 ```sh
-ln -s <path to ./dist/> obsidian-lock-drag-and-drop
+ln -s <path to ./dist/> lock-drag-and-drop
 ```
 
 If you want to sync your plugins, you will need to copy the folder instead of symlinking.
