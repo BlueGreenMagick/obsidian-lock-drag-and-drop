@@ -26,22 +26,23 @@ export default class LockDragAndDropPlugin extends Plugin {
       },
     });
 
-    this.refreshInterface();
     this.register(() => this.statusBarButton?.destroy());
 
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
+        if (!this.app.workspace.layoutReady) return;
         this.dragLockManager.refresh();
       }),
     );
     this.registerEvent(
       this.app.workspace.on("active-leaf-change", () => {
+        if (!this.app.workspace.layoutReady) return;
         this.dragLockManager.refresh();
       }),
     );
     this.register(() => this.dragLockManager.destroy());
 
-    this.app.workspace.onLayoutReady(() => this.dragLockManager.refresh());
+    this.app.workspace.onLayoutReady(() => this.refreshInterface());
   }
 
   refreshInterface(): void {
