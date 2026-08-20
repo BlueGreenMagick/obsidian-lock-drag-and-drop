@@ -19,22 +19,20 @@ pnpm run build
 
 The build writes `main.js`, `manifest.json`, and `styles.css` to `./dist/`.
 
-Then symlink the `./dist/` folder from the Obsidian plugin folder. 
+Then symlink the `./dist/` folder from the Obsidian plugin folder.
+
 ```sh
 ln -s <path to ./dist/> obsidian-lock-drag-and-drop
 ```
 
 If you want to sync your plugins, you will need to copy the folder instead of symlinking.
 
-
 ### Creating a release
 
-1. Update the version number in package.json and manifest.json
-2. Update versions.json using `pnpm version`
-3. Run below command to create and upload new version tag
+Run below command to create and upload new version tag. This makes use of `npm version` [lifecycle hook](https://docs.npmjs.com/cli/v8/commands/npm-version) and the script.
 
-```
-git tag -a 1.0.0 -m "1.0.0"
+```sh
+pnpm version 1.0.0
 git push origin main 1.0.0
 ```
 
