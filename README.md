@@ -1,10 +1,12 @@
-# Obsidian Plugin: Lock Drag and Drop
+# Lock Drag & Drop - Obsidian Plugin
 
-Lock Drag and Drop prevents accidental drag-and-drop actions in Obsidian sidebar views.
+<b>Lock Drag & Drop</b> prevents accidental drag & drop in Obsidian sidebars.
 
-You can toggle the unlock button on the top to unlock drag and drop only when needed.
+You can click on the move button at the top to enable drag & drop only when needed.
 
-On Mobile, long press triggers context-menu without drag and drop.
+On Mobile, long press immediately triggers context-menu instead of drag & drop.
+
+![screenshot](./resources/screenshot.png)
 
 ## Development
 
@@ -17,7 +19,13 @@ pnpm run build
 
 The build writes `main.js`, `manifest.json`, and `styles.css` to `./dist/`.
 
-Then symlink the `./dist/` folder from the Obsidian plugin folder. `ln -s <path to ./dist/> obsidian-lock-drag-and-drop`
+Then symlink the `./dist/` folder from the Obsidian plugin folder. 
+```sh
+ln -s <path to ./dist/> obsidian-lock-drag-and-drop
+```
+
+If you want to sync your plugins, you will need to copy the folder instead of symlinking.
+
 
 ### Creating a release
 
@@ -32,6 +40,6 @@ git push origin main 1.0.0
 
 ## Disclaimer
 
-This plugin was developed with AI assistance, and all code have been reviewed by a human.
+This plugin was developed with AI assistance, but all code was manually reviewed by a human.
 
 This plugin is not affiliated with official Obsidian product.
