@@ -65,10 +65,9 @@ export class LockDragAndDropSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    const interfaceGroup = new SettingGroup(containerEl);
-    interfaceGroup.setHeading("Interface");
+    const mainGroup = new SettingGroup(containerEl);
 
-    interfaceGroup
+    mainGroup
       .addSetting((setting) => {
         setting
           .setName("Nav header")
