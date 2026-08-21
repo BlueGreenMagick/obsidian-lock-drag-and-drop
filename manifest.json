@@ -4,6 +4,6 @@
   "author": "Yoonchae Lee",
   "version": "1.0.3",
   "minAppVersion": "1.11.0",
-  "description": "Prevent accidental drag & drop in sidebars",
+  "description": "Prevent accidental drag & drop in sidebars.",
   "isDesktopOnly": false
 }
